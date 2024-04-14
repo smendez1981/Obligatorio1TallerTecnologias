@@ -323,12 +323,16 @@ ConsultarDiccionario()
         letraFin=$(LeerLetra "Fin")
 
         echo "$letraInicio"
+        echo "$letraFin"
+
         grep "^$letraInicio" "$archivoSalida"
 
         while IFS= read -r palabra || [ -n "$palabra" ]; do
-        
+
                 letra_inicial="${palabra:0:1}"  # Obtener la primera letra de la palabra
-                letra_final="${palabra:-1}"  
+                letra_final="${palabra: -1}"  
+
+                echo "$letra_final"
 
                 if [[ "$letra_inicial" == "$letraInicio" && "$letra_final" == "$letraFin"  ]]; then
                     echo "$palabra" >> "$archivoSalida"
