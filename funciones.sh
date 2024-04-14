@@ -2,6 +2,7 @@
 
 ARCHIVOUSUARIOS="usuarios.txt"
 ARCHIVOVARIABLES="variables.config"
+ARCHIVODICCIONARIO="diccionario.txt"
 
 #Funcion de login***************************************************
 
@@ -87,23 +88,25 @@ ControladorOpcionesMenu() {
         echo ""
         echo "Configurar letra de inicio"
         echo "----------------------------------------"
-        GuardarLetraInicio
+        GuardarLetra "Inicio"
         ;;
     4)
         echo ""
         echo "Configurar letra de fin"
         echo "----------------------------------------"
-        GuardarLetraFin
+        GuardarLetra "Fin"
         ;;
     5)
         echo ""
         echo "Configurar letra contenida"
         echo "----------------------------------------"
-        GuardarLetraContenida
+        GuardarLetra "Contenida"
         ;;
     6)
-        echo "Has seleccionado la Opción Consultar diccionario"
-
+        echo ""
+        echo "Consultando diccionario..."        
+        
+        ConsultarDiccionario
         ;;
     7)
         echo "Has seleccionado la Opción Ingresar vocal"
@@ -234,31 +237,32 @@ ExisteUsuario() {
 
 }
 
-#Funcion encargada de guardar la letra de inicio en el arhivo de configuracion
-GuardarLetraInicio() {
+#Funcion encargada de guardar la letra  en el arhivo de configuracion
+#Se le pasa como parametro si es Inicio, Fin o Contenida
+GuardarLetra() {
 
-    #variables locales: clave, que almacena el nombre de la variable a modificar o agregar 
+    #variables locales: clave, que almacena el nombre de la variable a modificar o agregar
     #en el archivo de variables, y valor, que almacenará el valor ingresado por el usuario.
-    local clave="LetraInicio"
+    local clave=$1
     local valor
 
-    #Utiliza un bucle while para asegurarse de que el usuario ingrese un valor para la letra de inicio. 
+    #Utiliza un bucle while para asegurarse de que el usuario ingrese un valor para la letra de inicio.
     #Si el usuario no ingresa nada, muestra un mensaje de error en rojo.
     while [ -z "$valor" ]; do
 
-        read -p "Ingrese el valor de la letra de inicio:" valor
+        read -p "Ingrese el valor de la letra ${clave}:" valor
 
         if ! [ "$valor" ]; then
             echo ""
-            echo -e "\033[31mEl valor de la letra de inicio no puede quedar en blanco\033[0m"
+            echo -e "\033[31mEl valor de la letra ${clave} no puede quedar en blanco\033[0m"
         fi
 
-        #Luego, verifica si el valor ingresado contiene caracteres que no sean letras del alfabeto. 
+        #Luego, verifica si el valor ingresado contiene caracteres que no sean letras del alfabeto.
         #Si es así, muestra un mensaje de error en rojo y limpia el valor para que el usuario tenga que ingresar uno nuevo.
         if [[ "${valor}" =~ [^a-zA-Z] ]]; then
-         echo ""
-         echo -e "\033[31mValores permitidos (Aa-Zz)\033[0m"
-         valor=""
+            echo ""
+            echo -e "\033[31mValores permitidos (Aa-Zz)\033[0m"
+            valor=""
         fi
 
     done
@@ -268,112 +272,75 @@ GuardarLetraInicio() {
         # La variable existe, modificar su valor
         sed -i "s/^$clave=.*/$clave=$valor/" "$ARCHIVOVARIABLES"
         echo ""
-        echo "La letra de inicio ha sido modificada con el valor '$valor'."
+        echo "La letra ${clave} ha sido modificada con el valor '$valor'."
     else
         # La variable no existe, agregarla al final del archivo
         echo "$clave=$valor" >>"$ARCHIVOVARIABLES"
         echo ""
-        echo "La letra de inicio ha sido agregada con el valor '$valor'."
+        echo "La letra ${clave} ha sido agregada con el valor '$valor'."
     fi
 
-        echo ""
-      read -p "Presiona Enter para continuar..."
-      MenuPrincipal
+    echo ""
+    read -p "Presiona Enter para continuar..."
+    MenuPrincipal
+}
+
+LeerLetra() {
+
+    
+    # Verificar si se proporcionó un nombre de clave como argumento
+    if [ $# -ne 1 ]; then
+        echo "Uso: LeerLetra <clave>"
+        return 1
+    fi
+
+    local clave="$1"
+   
+      # Verificar si el archivo de configuración existe
+    if [ ! -f "$ARCHIVOVARIABLES" ]; then
+        echo "El archivo de configuración $ARCHIVOVARIABLES no existe."
+        return 1
+    fi
+
+    # Buscar la clave en el archivo de configuración y devolver su valor
+    local valor=$(grep "^$clave=" "$ARCHIVOVARIABLES" | cut -d '=' -f 2)
+    if [ -z "$valor" ]; then
+        echo "No se encontró el valor para la clave '$clave' en el archivo de configuración."
+        return 1
+    fi
+
+    echo "$valor"
 }
 
 
-#Funcion encargada de guardar la letra de inicio en el arhivo de configuracion
-GuardarLetraFin() {
+ConsultarDiccionario()
+{
+        fechaHora=$(date +"%Y-%m-%d_%H-%M-%S")        
+        archivoSalida="resultados_${fechaHora}.txt"
+        touch "$archivoSalida"
 
-    #variables locales: clave, que almacena el nombre de la variable a modificar o agregar 
-    #en el archivo de variables, y valor, que almacenará el valor ingresado por el usuario.
-    local clave="LetraFin"
-    local valor
+        letraInicio=$(LeerLetra "Inicio")
+        echo "$letraInicio"
+        grep "^$letraInicio" "$archivoSalida"
 
-    #Utiliza un bucle while para asegurarse de que el usuario ingrese un valor para la letra de inicio. 
-    #Si el usuario no ingresa nada, muestra un mensaje de error en rojo.
-    while [ -z "$valor" ]; do
+        while IFS= read -r palabra || [ -n "$palabra" ]; do
+                letra_inicial="${palabra:0:1}"  # Obtener la primera letra de la palabra
 
-        read -p "Ingrese el valor de la letra de fin:" valor
+                if [[ "$letra_inicial" == "$letraInicio" ]]; then
+                    echo "$palabra" >> "$archivoSalida"
+                fi
 
-        if ! [ "$valor" ]; then
-            echo ""
-            echo -e "\033[31mEl valor de la letra de fin no puede quedar en blanco\033[0m"
-        fi
+                
+            done < "$ARCHIVODICCIONARIO"
+         
+         
+        resultado=$(LeerLetra "Fin")
+        echo "$resultado"
 
-        #Luego, verifica si el valor ingresado contiene caracteres que no sean letras del alfabeto. 
-        #Si es así, muestra un mensaje de error en rojo y limpia el valor para que el usuario tenga que ingresar uno nuevo.
-        if [[ "${valor}" =~ [^a-zA-Z] ]]; then
-         echo ""
-         echo -e "\033[31mValores permitidos (Aa-Zz)\033[0m"
-         valor=""
-        fi
+        resultado=$(LeerLetra "Contenida")
+        echo "$resultado"
 
-    done
+        read -p "Presiona Enter para continuar..."
 
-    # Comprobar si la variable ya existe en el archivo
-    if grep -q "^$clave=" "$ARCHIVOVARIABLES"; then
-        # La variable existe, modificar su valor
-        sed -i "s/^$clave=.*/$clave=$valor/" "$ARCHIVOVARIABLES"
-        echo ""
-        echo "La letra de fin ha sido modificada con el valor '$valor'."
-    else
-        # La variable no existe, agregarla al final del archivo
-        echo "$clave=$valor" >>"$ARCHIVOVARIABLES"
-        echo ""
-        echo "La letra de fin ha sido agregada con el valor '$valor'."
-    fi
 
-        echo ""
-      read -p "Presiona Enter para continuar..."
-      MenuPrincipal
 }
-
-
-#Funcion encargada de guardar la letra de inicio en el arhivo de configuracion
-GuardarLetraContenida() {
-
-    #variables locales: clave, que almacena el nombre de la variable a modificar o agregar 
-    #en el archivo de variables, y valor, que almacenará el valor ingresado por el usuario.
-    local clave="LetraContenida"
-    local valor
-
-    #Utiliza un bucle while para asegurarse de que el usuario ingrese un valor para la letra de inicio. 
-    #Si el usuario no ingresa nada, muestra un mensaje de error en rojo.
-    while [ -z "$valor" ]; do
-
-        read -p "Ingrese el valor de la letra contenida:" valor
-
-        if ! [ "$valor" ]; then
-            echo ""
-            echo -e "\033[31mEl valor de la letra contenida no puede quedar en blanco\033[0m"
-        fi
-
-        #Luego, verifica si el valor ingresado contiene caracteres que no sean letras del alfabeto. 
-        #Si es así, muestra un mensaje de error en rojo y limpia el valor para que el usuario tenga que ingresar uno nuevo.
-        if [[ "${valor}" =~ [^a-zA-Z] ]]; then
-         echo ""
-         echo -e "\033[31mValores permitidos (Aa-Zz)\033[0m"
-         valor=""
-        fi
-
-    done
-
-    # Comprobar si la variable ya existe en el archivo
-    if grep -q "^$clave=" "$ARCHIVOVARIABLES"; then
-        # La variable existe, modificar su valor
-        sed -i "s/^$clave=.*/$clave=$valor/" "$ARCHIVOVARIABLES"
-        echo ""
-        echo "La letra contenida sido modificada con el valor '$valor'."
-    else
-        # La variable no existe, agregarla al final del archivo
-        echo "$clave=$valor" >>"$ARCHIVOVARIABLES"
-        echo ""
-        echo "La letra contenida ha sido agregada con el valor '$valor'."
-    fi
-
-        echo ""
-      read -p "Presiona Enter para continuar..."
-      MenuPrincipal
-}
-
