@@ -78,7 +78,7 @@ done
         read -p "Por favor, selecciona una opción: " opcion
         ControladorOpcionesMenu $opcion
         echo
-        read -p "Presiona Enter para continuar..."
+        
     done
 
  else
