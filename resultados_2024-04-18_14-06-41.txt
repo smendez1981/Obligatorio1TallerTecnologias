@@ -1,0 +1,60 @@
+falangista
+fangosa
+fatiga
+fatigaba
+fatigada
+fatigara
+fatigosa
+figura
+figuraba
+figurada
+figurara
+figurativa
+filigrana
+fingida
+fingidora
+fingiera
+flagela
+flagelaba
+flagelada
+flagelara
+fogata
+fogosa
+fotograbada
+fotografiaba
+fotografiada
+fotografiara
+fragata
+fragmenta
+fragmentaba
+fragmentada
+fragmentara
+fragorosa
+fragosa
+fregada
+fregadura
+fregara
+fregona
+friega
+frigida
+fuga
+fugaba
+fugada
+fugara
+fugitiva
+fungosa
+fustiga
+fustigaba
+fustigada
+fustigara
+
+
+Fecha ejecución reporte: 18/04/2024 14:06:43
+
+Cantidad de palabras encontradas: 49
+
+Cantidad de palabras totales: 163819
+
+Porcentaje aciertos: .02%
+
+Usuario logueado: admin

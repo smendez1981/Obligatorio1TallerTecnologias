@@ -3,6 +3,7 @@
 ARCHIVOUSUARIOS="usuarios.txt"
 ARCHIVOVARIABLES="variables.config"
 ARCHIVODICCIONARIO="diccionario.txt"
+USUARIO=""
 
 #Funcion de login***************************************************
 
@@ -41,6 +42,9 @@ Login() {
     while IFS=":" read -r usuDb pwdDb; do
 
         if [[ "$usu" == "$usuDb" && "$pwd" == "$pwdDb" ]]; then
+             clave="Usuario"
+             sed -i "s/^$clave=.*/$clave=$usu/" "$ARCHIVOVARIABLES"
+
             return 0
         fi
     done <$ARCHIVOUSUARIOS
@@ -285,12 +289,12 @@ GuardarLetra() {
     MenuPrincipal
 }
 
-LeerLetra() {
+LeerConfig() {
 
     
     # Verificar si se proporcionó un nombre de clave como argumento
     if [ $# -ne 1 ]; then
-        echo "Uso: LeerLetra <clave>"
+        echo "Uso: LeerConfig <clave>"
         return 1
     fi
 
@@ -315,38 +319,73 @@ LeerLetra() {
 
 ConsultarDiccionario()
 {
+        contadorPalabrasEncontradas=0
+        contadorTotal=0
+
         fechaHora=$(date +"%Y-%m-%d_%H-%M-%S")        
         archivoSalida="resultados_${fechaHora}.txt"
         touch "$archivoSalida"
 
-        letraInicio=$(LeerLetra "Inicio")
-        letraFin=$(LeerLetra "Fin")
-
+        letraInicio="$(LeerConfig "Inicio")"
+        letraFin="$(LeerConfig "Fin")"
+        letraContenida="$(LeerConfig "Contenida")"
+      
         echo "$letraInicio"
         echo "$letraFin"
-
-        grep "^$letraInicio" "$archivoSalida"
-
-        while IFS= read -r palabra || [ -n "$palabra" ]; do
-
-                letra_inicial="${palabra:0:1}"  # Obtener la primera letra de la palabra
-                letra_final="${palabra: -1}"  
-
-                echo "$letra_final"
-
-                if [[ "$letra_inicial" == "$letraInicio" && "$letra_final" == "$letraFin"  ]]; then
+        echo "$letraContenida"
+ 
+            # Construir la expresión regular para buscar palabras
+            regex="^${letraInicio}.*${letraContenida}.*${letraFin}$"
+            
+            # Usar while read para leer el archivo línea por línea
+            while IFS= read -r palabra; do
+                # Verificar si la palabra cumple con la expresión regular
+                if [[ "$palabra" =~ $regex ]]; then
+                    echo "$palabra"
                     echo "$palabra" >> "$archivoSalida"
+                    contadorPalabrasEncontradas=$((contadorPalabrasEncontradas+1))
                 fi
 
-                
-            done < "$ARCHIVODICCIONARIO"
-         
-         
-        resultado=$(LeerLetra "Fin")
-        echo "$resultado"
+                 contadorTotal=$((contadorTotal+1))
 
-        resultado=$(LeerLetra "Contenida")
-        echo "$resultado"
+            done < "$ARCHIVODICCIONARIO" 
+
+            #Fecha de ejecutado el reporte
+            echo "" >> "$archivoSalida"
+            echo "" >> "$archivoSalida"
+            fecha="Fecha ejecución reporte: $(date +'%d/%m/%Y %H:%M:%S')"
+            echo "$fecha"
+            echo "$fecha" >> "$archivoSalida"
+
+            #Cantidad de palabras encontradas
+            echo "" >> "$archivoSalida"
+            palabrasEncontradas="Cantidad de palabras encontradas: ${contadorPalabrasEncontradas}" 
+            echo $palabrasEncontradas    
+            echo "$palabrasEncontradas" >> "$archivoSalida"
+            
+            #Cantidad de palabras totales
+            echo "" >> "$archivoSalida"
+            palabrasTotales="Cantidad de palabras totales: ${contadorTotal}" 
+            echo $palabrasTotales
+            echo "$palabrasTotales" >> "$archivoSalida" 
+
+            #Porcentajes que cumplen lo pedido
+            echo "" >> "$archivoSalida"             
+            porcentaje=$(echo "scale=2; ($contadorPalabrasEncontradas * 100) / $contadorTotal" | bc) 
+            echo "Porcentaje aciertos: ${porcentaje}%"
+            echo "Porcentaje aciertos: ${porcentaje}%" >> "$archivoSalida" 
+
+
+            #Usuario logueado
+            echo "" >> "$archivoSalida"              
+            usuario="$(LeerConfig "Usuario")"
+            usuarioLogueado="Usuario logueado: ${usuario}"
+            echo $usuarioLogueado
+            echo "$usuarioLogueado" >> "$archivoSalida" 
+ 
+            
+
+
 
         read -p "Presiona Enter para continuar..."
 
