@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Verificar que se han proporcionado los argumentos esperados
+if [ "$#" -ne 3 ]; then
+    echo "Uso: $0 <letra_inicio> <letra_fin> <letra_contenida>"
+    exit 1
+fi
+
+# Guardar los argumentos en variables
+letra_inicio=$1
+letra_fin=$2
+letra_contenida=$3
+
+# Construir la expresión regular para la búsqueda
+regex="^[$letra_inicio-$letra_fin]*[$letra_contenida][$letra_inicio-$letra_fin]*$"
+
+# Ruta al archivo del diccionario (cambia esto según la ubicación de tu diccionario)
+diccionario="/ruta/al/diccionario.txt"
+
+# Leer el diccionario línea por línea y buscar coincidencias
+while IFS= read -r palabra; do
+    # Verificar si la palabra coincide con la expresión regular
+    if [[ "$palabra" =~ $regex ]]; then
+        echo "$palabra"
+    fi
+done < "$diccionario"
