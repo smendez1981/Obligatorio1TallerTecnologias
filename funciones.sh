@@ -42,8 +42,8 @@ Login() {
     while IFS=":" read -r usuDb pwdDb; do
 
         if [[ "$usu" == "$usuDb" && "$pwd" == "$pwdDb" ]]; then
-             clave="Usuario"
-             sed -i "s/^$clave=.*/$clave=$usu/" "$ARCHIVOVARIABLES"
+            clave="Usuario"
+            sed -i "s/^$clave=.*/$clave=$usu/" "$ARCHIVOVARIABLES"
 
             return 0
         fi
@@ -108,17 +108,20 @@ ControladorOpcionesMenu() {
         ;;
     6)
         echo ""
-        echo "Consultando diccionario..."        
-        
+        echo "Consultando diccionario..."
+
         ConsultarDiccionario
         ;;
     7)
-        echo "Has seleccionado la Opción Ingresar vocal"
-
+        echo ""
+        echo "Configurar Vocal"
+        echo "----------------------------------------"
+        GuardarLetra "Vocal"
         ;;
     8)
-        echo "Has seleccionado la Opción Listar palabras de vocal ingresada"
-
+        echo ""
+        echo "Consultando vocal..."
+        ConsultarVocal
         ;;
     9)
         echo "Has seleccionado la Opción Algoritmo 1"
@@ -261,12 +264,28 @@ GuardarLetra() {
             echo -e "\033[31mEl valor de la letra ${clave} no puede quedar en blanco\033[0m"
         fi
 
-        #Luego, verifica si el valor ingresado contiene caracteres que no sean letras del alfabeto.
-        #Si es así, muestra un mensaje de error en rojo y limpia el valor para que el usuario tenga que ingresar uno nuevo.
-        if [[ "${valor}" =~ [^a-zA-Z] ]]; then
-            echo ""
-            echo -e "\033[31mValores permitidos (Aa-Zz)\033[0m"
-            valor=""
+        #Si el parametro clave es vocal reviso el dato
+        #que me pasen sea una vocal usando una regex.
+        if [[ "${clave}" == "Vocal" ]]; then
+
+            valor_minuscula=$(echo "$valor" | tr "[:upper:]" "[:lower:]")
+            regex_vocal="[aeiou]"
+
+            if [[ ! "$valor_minuscula" =~ $regex_vocal ]]; then
+                echo ""
+                echo -e "\033[31mValores permitidos (a-e-i-o-u)\033[0m"
+                valor=""
+            fi
+        else
+
+            #Luego, verifica si el valor ingresado contiene caracteres que no sean letras del alfabeto.
+            #Si es así, muestra un mensaje de error en rojo y limpia el valor para que el usuario tenga que ingresar uno nuevo.
+            if [[ "${valor}" =~ [^a-zA-Z] ]]; then
+                echo ""
+                echo -e "\033[31mValores permitidos (Aa-Zz)\033[0m"
+                valor=""
+            fi
+
         fi
 
     done
@@ -291,7 +310,6 @@ GuardarLetra() {
 
 LeerConfig() {
 
-    
     # Verificar si se proporcionó un nombre de clave como argumento
     if [ $# -ne 1 ]; then
         echo "Uso: LeerConfig <clave>"
@@ -299,8 +317,8 @@ LeerConfig() {
     fi
 
     local clave="$1"
-   
-      # Verificar si el archivo de configuración existe
+
+    # Verificar si el archivo de configuración existe
     if [ ! -f "$ARCHIVOVARIABLES" ]; then
         echo "El archivo de configuración $ARCHIVOVARIABLES no existe."
         return 1
@@ -316,78 +334,111 @@ LeerConfig() {
     echo "$valor"
 }
 
+ConsultarVocal() {
 
-ConsultarDiccionario()
-{
-        contadorPalabrasEncontradas=0
-        contadorTotal=0
+    #Creacion de archivo que se guarda con
+    #los resultados de la busqueda.
+    #resultados_vocal_YYYY-mm-dd_HH-MM-ss
+    fechaHora=$(date +"%Y-%m-%d_%H-%M-%S")
+    archivoSalida="resultados_vocal_${fechaHora}.txt"
+    touch "$archivoSalida"
 
-        fechaHora=$(date +"%Y-%m-%d_%H-%M-%S")        
-        archivoSalida="resultados_${fechaHora}.txt"
-        touch "$archivoSalida"
+    vocal="$(LeerConfig "Vocal")"
 
-        letraInicio="$(LeerConfig "Inicio")"
-        letraFin="$(LeerConfig "Fin")"
-        letraContenida="$(LeerConfig "Contenida")"
-      
-        echo "$letraInicio"
-        echo "$letraFin"
-        echo "$letraContenida"
- 
-            # Construir la expresión regular para buscar palabras
-            regex="^${letraInicio}.*${letraContenida}.*${letraFin}$"
-            
-            # Usar while read para leer el archivo línea por línea
-            while IFS= read -r palabra; do
-                # Verificar si la palabra cumple con la expresión regular
-                if [[ "$palabra" =~ $regex ]]; then
-                    echo "$palabra"
-                    echo "$palabra" >> "$archivoSalida"
-                    contadorPalabrasEncontradas=$((contadorPalabrasEncontradas+1))
-                fi
+    regex_vocal="^aeiou"
 
-                 contadorTotal=$((contadorTotal+1))
+    # Usar while read para leer el archivo línea por línea
+    while IFS= read -r palabra; do
+        # La expresión regular ^([^aeiou]*(${vocal}|${vocal^^})[^aeiou]*)+ se utiliza para verificar si la palabra contiene la vocal dada ($vocal en minúsculas o mayúsculas) rodeada únicamente por consonantes o al inicio/final de la palabra, permitiendo que la vocal aparezca una o más veces en la palabra.
+        # ^: indica el inicio de la cadena.
+        # (...)+: representa una o más ocurrencias del grupo entre paréntesis.
+        # [^aeiou]*: representa cero o más caracteres que no sean vocales (consonantes).
+        # (${vocal}|${vocal^^}): representa la vocal dada ($vocal en minúsculas o mayúsculas). Por ejemplo, si la vocal es 'a', esto se traduce a (a|A), permitiendo que 'a' o 'A' aparezcan.
+        # [^aeiouA]*: representa cero o más caracteres que no sean vocales (consonantes), después de la vocal.
+        if [[ "$palabra" =~ ^([$regex_vocal]*(${vocal}|${vocal^^})[$regex_vocal]*)+$ ]]; then
+            echo "$palabra"
+            echo "$palabra" >>"$archivoSalida"
+        fi
 
-            done < "$ARCHIVODICCIONARIO" 
+    done <"$ARCHIVODICCIONARIO"
 
-            #Fecha de ejecutado el reporte
-            echo "" >> "$archivoSalida"
-            echo "" >> "$archivoSalida"
-            fecha="Fecha ejecución reporte: $(date +'%d/%m/%Y %H:%M:%S')"
-            echo "$fecha"
-            echo "$fecha" >> "$archivoSalida"
+    echo "Busqueda terminada"
+    read -p "Presiona Enter para continuar..."
 
-            #Cantidad de palabras encontradas
-            echo "" >> "$archivoSalida"
-            palabrasEncontradas="Cantidad de palabras encontradas: ${contadorPalabrasEncontradas}" 
-            echo $palabrasEncontradas    
-            echo "$palabrasEncontradas" >> "$archivoSalida"
-            
-            #Cantidad de palabras totales
-            echo "" >> "$archivoSalida"
-            palabrasTotales="Cantidad de palabras totales: ${contadorTotal}" 
-            echo $palabrasTotales
-            echo "$palabrasTotales" >> "$archivoSalida" 
+}
 
-            #Porcentajes que cumplen lo pedido
-            echo "" >> "$archivoSalida"             
-            porcentaje=$(echo "scale=2; ($contadorPalabrasEncontradas * 100) / $contadorTotal" | bc) 
-            echo "Porcentaje aciertos: ${porcentaje}%"
-            echo "Porcentaje aciertos: ${porcentaje}%" >> "$archivoSalida" 
+ConsultarDiccionario() {
+    contadorPalabrasEncontradas=0
+    contadorTotal=0
 
+    #Creacion de archivo que se guarda con
+    #los resultados de la busqueda.
+    #resultados_YYYY-mm-dd_HH-MM-ss
+    fechaHora=$(date +"%Y-%m-%d_%H-%M-%S")
+    archivoSalida="resultados_${fechaHora}.txt"
+    touch "$archivoSalida"
 
-            #Usuario logueado
-            echo "" >> "$archivoSalida"              
-            usuario="$(LeerConfig "Usuario")"
-            usuarioLogueado="Usuario logueado: ${usuario}"
-            echo $usuarioLogueado
-            echo "$usuarioLogueado" >> "$archivoSalida" 
- 
-            
+    #Recupera las variables guardadas en el
+    #archivo de configuracion
+    letraInicio="$(LeerConfig "Inicio")"
+    letraFin="$(LeerConfig "Fin")"
+    letraContenida="$(LeerConfig "Contenida")"
 
+    #echo "$letraInicio"
+    #echo "$letraFin"
+    #echo "$letraContenida"
 
+    #Construir la expresión regular para buscar palabras
+    #Empieza con "letraInicio"
+    #Termina con "LetraFin"
+    #En medio tiene "LetraContenida"
+    regex="^${letraInicio}.*${letraContenida}.*${letraFin}$"
 
-        read -p "Presiona Enter para continuar..."
+    # Usar while read para leer el archivo línea por línea
+    while IFS= read -r palabra; do
+        # Verificar si la palabra cumple con la expresión regular
+        if [[ "$palabra" =~ $regex ]]; then
+            echo "$palabra"
+            echo "$palabra" >>"$archivoSalida"
+            contadorPalabrasEncontradas=$((contadorPalabrasEncontradas + 1))
+        fi
 
+        contadorTotal=$((contadorTotal + 1))
+
+    done <"$ARCHIVODICCIONARIO"
+
+    #Fecha de ejecutado el reporte
+    echo "" >>"$archivoSalida"
+    echo "" >>"$archivoSalida"
+    fecha="Fecha ejecución reporte: $(date +'%d/%m/%Y %H:%M:%S')"
+    echo "$fecha"
+    echo "$fecha" >>"$archivoSalida"
+
+    #Cantidad de palabras encontradas
+    echo "" >>"$archivoSalida"
+    palabrasEncontradas="Cantidad de palabras encontradas: ${contadorPalabrasEncontradas}"
+    echo "$palabrasEncontradas"
+    echo "$palabrasEncontradas" >>"$archivoSalida"
+
+    #Cantidad de palabras totales
+    echo "" >>"$archivoSalida"
+    palabrasTotales="Cantidad de palabras totales: ${contadorTotal}"
+    echo "$palabrasTotales"
+    echo "$palabrasTotales" >>"$archivoSalida"
+
+    #Porcentajes que cumplen lo pedido
+    echo "" >>"$archivoSalida"
+    porcentaje=$(echo "scale=2; ($contadorPalabrasEncontradas * 100) / $contadorTotal" | bc)
+    echo "Porcentaje aciertos: ${porcentaje}%"
+    echo "Porcentaje aciertos: ${porcentaje}%" >>"$archivoSalida"
+
+    #Usuario logueado
+    echo "" >>"$archivoSalida"
+    usuario="$(LeerConfig "Usuario")"
+    usuarioLogueado="Usuario logueado: ${usuario}"
+    echo "$usuarioLogueado"
+    echo "$usuarioLogueado" >>"$archivoSalida"
+
+    read -p "Presiona Enter para continuar..."
 
 }
