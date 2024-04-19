@@ -16,7 +16,10 @@ while IFS= read -r palabra; do
     fi
 done < "$diccionario"
 
-if [[ "$palabra" =~ ^([^aeiouAEIOU]*(${vocal}|${vocal^^})[^aeiouAEIOU]*)+$ ]]; then
-if [[ "$palabra" =~ ^[^aeiouAEIOU]*(${vocal}|${vocal^^})+[^aeiouAEIOU]*$ ]]; then
 
-if [[ "$palabra" =~ ^[^aeiouAEIOU]*[${vocal}${vocal^^}][^aeiouAEIOU]*$ ]]; then
+    La expresión regular ^([^aeiouAEIOU]*(${vocal}|${vocal^^})[^aeiouAEIOU]*)+ se utiliza para verificar si la palabra contiene la vocal dada ($vocal en minúsculas o mayúsculas) rodeada únicamente por consonantes o al inicio/final de la palabra, permitiendo que la vocal aparezca una o más veces en la palabra.
+        ^: indica el inicio de la cadena.
+        (...)+: representa una o más ocurrencias del grupo entre paréntesis.
+        [^aeiouAEIOU]*: representa cero o más caracteres que no sean vocales (consonantes).
+        (${vocal}|${vocal^^}): representa la vocal dada ($vocal en minúsculas o mayúsculas). Por ejemplo, si la vocal es 'a', esto se traduce a (a|A), permitiendo que 'a' o 'A' aparezcan.
+        [^aeiouAEIOU]*: representa cero o más caracteres que no sean vocales (consonantes), después de la vocal.
