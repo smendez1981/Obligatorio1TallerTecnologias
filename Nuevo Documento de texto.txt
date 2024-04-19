@@ -15,3 +15,6 @@ while IFS= read -r palabra; do
         echo "$palabra"
     fi
 done < "$diccionario"
+
+
+if [[ "$palabra" =~ ^[^aeiouAEIOU]*[${vocal}${vocal^^}][^aeiouAEIOU]*$ ]]; then
