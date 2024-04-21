@@ -72,7 +72,8 @@ MenuPrincipal() {
 }
 
 ControladorOpcionesMenu() {
-    local opcion=$1
+    # local opcion=$1
+    local opcion=6
     case $opcion in
     1)
         echo ""
@@ -110,7 +111,7 @@ ControladorOpcionesMenu() {
         echo ""
         echo "Consultando diccionario..."
 
-        ConsultarDiccionario
+        ConsultarDiccionarioManu
         ;;
     7)
         echo ""
@@ -441,4 +442,61 @@ ConsultarDiccionario() {
 
     read -p "Presiona Enter para continuar..."
 
+}
+
+ConsultarDiccionarioManu() {
+    #Recupera las variables guardadas en el
+    #archivo de configuracion
+    letraInicio="$(LeerConfig "Inicio")"
+    letraFin="$(LeerConfig "Fin")"
+    letraContenida="$(LeerConfig "Contenida")"
+    #Construir la expresión regular para buscar palabras
+    #Empieza con "letraInicio"
+    #Termina con "LetraFin"
+    #En medio tiene "LetraContenida"
+    regex="^${letraInicio}.*${letraContenida}.*${letraFin}$"
+    #wc (Word Count) cuenta la cantida de palabras, el parametro -l hace que cuenta la cantidad de lineas
+    cantidadPalabrasEnDiccionario=$(wc -l < "$ARCHIVODICCIONARIO")
+    #usamos grep para buscar las palabras que cumplen con la expresion regular
+    palabrasEncontradas=$(grep -E "$regex" "$ARCHIVODICCIONARIO")
+    cantidadPalabrasEncontradas=$(echo "$palabrasEncontradas" | wc -l)
+    porcentajeAciertos=$(echo "scale=2; $cantidadPalabrasEncontradas / $cantidadPalabrasEnDiccionario * 100" | bc)
+    
+    echo "Cantidad de palabras encontradas: $cantidadPalabrasEncontradas"
+    echo "Total de palabras en diccionario: $cantidadPalabrasEnDiccionario"
+    echo "Porcentaje de palabras encontradas: $porcentajeAciertos"
+    echo "Palabras encontradas:"
+    echo "$palabrasEncontradas"
+
+    #Creacion de archivo que se guarda con
+    #los resultados de la busqueda.
+    #resultados_YYYY-mm-dd_HH-MM-ss
+    fechaHora=$(date +"%Y-%m-%d_%H-%M-%S")
+    archivoSalida="resultados_${fechaHora}.txt"
+    touch "$archivoSalida"
+
+    #Fecha de ejecutado el reporte
+    echo "" >>"$archivoSalida"
+    echo "" >>"$archivoSalida"
+    fecha="Fecha ejecución reporte: $(date +'%d/%m/%Y %H:%M:%S')"
+    echo "$fecha"
+    echo "$fecha" >>"$archivoSalida"
+
+    #Cantidad de palabras encontradas
+    echo "Cantidad de palabras encontradas: ${cantidadPalabrasEncontradas}">>"$archivoSalida"
+
+    #Cantidad de palabras totales
+    echo "Cantidad de palabras totales: ${cantidadPalabrasEnDiccionario}" >>"$archivoSalida"
+
+    #Porcentajes que cumplen lo pedido
+    echo "Porcentaje aciertos: ${porcentajeAciertos}%" >>"$archivoSalida"
+
+    #Usuario logueado
+    echo "" >>"$archivoSalida"
+    usuario="$(LeerConfig "Usuario")"
+    usuarioLogueado="Usuario logueado: ${usuario}"
+    echo "$usuarioLogueado"
+    echo "$usuarioLogueado" >>"$archivoSalida"
+    
+    read -p "Presiona Enter para continuar..."
 }

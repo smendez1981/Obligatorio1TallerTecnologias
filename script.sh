@@ -77,8 +77,7 @@ done
         MenuPrincipal
         read -p "Por favor, selecciona una opción: " opcion
         ControladorOpcionesMenu $opcion
-        echo
-        
+        echo    
     done
 
  else
