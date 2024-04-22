@@ -72,9 +72,11 @@ MenuPrincipal() {
 }
 
 ControladorOpcionesMenu() {
-    # local opcion=$1
-    local opcion=6
+
+    local opcion=$1
+
     case $opcion in
+
     1)
         echo ""
         echo "Listado de  usuarios registros"
@@ -111,7 +113,7 @@ ControladorOpcionesMenu() {
         echo ""
         echo "Consultando diccionario..."
 
-        ConsultarDiccionarioManu
+        ConsultarDiccionario
         ;;
     7)
         echo ""
@@ -125,8 +127,9 @@ ControladorOpcionesMenu() {
         ConsultarVocal
         ;;
     9)
-        echo "Has seleccionado la Opción Algoritmo 1"
-
+        echo "Opción Algoritmo 1"
+        echo "----------------------------------------"
+        Algoritmo1
         ;;
     10)
         echo "Has seleccionado la Opción Algoritmo 2"
@@ -153,8 +156,12 @@ ControladorOpcionesMenu() {
 ListarUsuarios() {
 
     while IFS=":" read -r usuDb pwdDb; do
-        echo $usuDb
+        echo "$usuDb"
     done <$ARCHIVOUSUARIOS
+
+    read -p "Presiona Enter para continuar..."
+    MenuPrincipal
+
 }
 #**********************************************************************************************
 
@@ -205,6 +212,8 @@ AltaUsuario() {
 
         if ExisteUsuario "$usuario"; then
             echo -e "\033[31mEl nombre '$usuario' ya se encuentra ingresado\033[0m"
+            read -p "Presiona Enter para continuar..."
+            AltaUsuario
         else
 
             while [ -z "$password" ]; do
@@ -369,82 +378,6 @@ ConsultarVocal() {
 }
 
 ConsultarDiccionario() {
-    contadorPalabrasEncontradas=0
-    contadorTotal=0
-
-    #Creacion de archivo que se guarda con
-    #los resultados de la busqueda.
-    #resultados_YYYY-mm-dd_HH-MM-ss
-    fechaHora=$(date +"%Y-%m-%d_%H-%M-%S")
-    archivoSalida="resultados_${fechaHora}.txt"
-    touch "$archivoSalida"
-
-    #Recupera las variables guardadas en el
-    #archivo de configuracion
-    letraInicio="$(LeerConfig "Inicio")"
-    letraFin="$(LeerConfig "Fin")"
-    letraContenida="$(LeerConfig "Contenida")"
-
-    #echo "$letraInicio"
-    #echo "$letraFin"
-    #echo "$letraContenida"
-
-    #Construir la expresión regular para buscar palabras
-    #Empieza con "letraInicio"
-    #Termina con "LetraFin"
-    #En medio tiene "LetraContenida"
-    regex="^${letraInicio}.*${letraContenida}.*${letraFin}$"
-
-    # Usar while read para leer el archivo línea por línea
-    while IFS= read -r palabra; do
-        # Verificar si la palabra cumple con la expresión regular
-        if [[ "$palabra" =~ $regex ]]; then
-            echo "$palabra"
-            echo "$palabra" >>"$archivoSalida"
-            contadorPalabrasEncontradas=$((contadorPalabrasEncontradas + 1))
-        fi
-
-        contadorTotal=$((contadorTotal + 1))
-
-    done <"$ARCHIVODICCIONARIO"
-
-    #Fecha de ejecutado el reporte
-    echo "" >>"$archivoSalida"
-    echo "" >>"$archivoSalida"
-    fecha="Fecha ejecución reporte: $(date +'%d/%m/%Y %H:%M:%S')"
-    echo "$fecha"
-    echo "$fecha" >>"$archivoSalida"
-
-    #Cantidad de palabras encontradas
-    echo "" >>"$archivoSalida"
-    palabrasEncontradas="Cantidad de palabras encontradas: ${contadorPalabrasEncontradas}"
-    echo "$palabrasEncontradas"
-    echo "$palabrasEncontradas" >>"$archivoSalida"
-
-    #Cantidad de palabras totales
-    echo "" >>"$archivoSalida"
-    palabrasTotales="Cantidad de palabras totales: ${contadorTotal}"
-    echo "$palabrasTotales"
-    echo "$palabrasTotales" >>"$archivoSalida"
-
-    #Porcentajes que cumplen lo pedido
-    echo "" >>"$archivoSalida"
-    porcentaje=$(echo "scale=2; ($contadorPalabrasEncontradas * 100) / $contadorTotal" | bc)
-    echo "Porcentaje aciertos: ${porcentaje}%"
-    echo "Porcentaje aciertos: ${porcentaje}%" >>"$archivoSalida"
-
-    #Usuario logueado
-    echo "" >>"$archivoSalida"
-    usuario="$(LeerConfig "Usuario")"
-    usuarioLogueado="Usuario logueado: ${usuario}"
-    echo "$usuarioLogueado"
-    echo "$usuarioLogueado" >>"$archivoSalida"
-
-    read -p "Presiona Enter para continuar..."
-
-}
-
-ConsultarDiccionarioManu() {
     #Recupera las variables guardadas en el
     #archivo de configuracion
     letraInicio="$(LeerConfig "Inicio")"
@@ -456,12 +389,12 @@ ConsultarDiccionarioManu() {
     #En medio tiene "LetraContenida"
     regex="^${letraInicio}.*${letraContenida}.*${letraFin}$"
     #wc (Word Count) cuenta la cantida de palabras, el parametro -l hace que cuenta la cantidad de lineas
-    cantidadPalabrasEnDiccionario=$(wc -l < "$ARCHIVODICCIONARIO")
+    cantidadPalabrasEnDiccionario=$(wc -l <"$ARCHIVODICCIONARIO")
     #usamos grep para buscar las palabras que cumplen con la expresion regular
     palabrasEncontradas=$(grep -E "$regex" "$ARCHIVODICCIONARIO")
     cantidadPalabrasEncontradas=$(echo "$palabrasEncontradas" | wc -l)
     porcentajeAciertos=$(echo "scale=2; $cantidadPalabrasEncontradas / $cantidadPalabrasEnDiccionario * 100" | bc)
-    
+
     echo "Cantidad de palabras encontradas: $cantidadPalabrasEncontradas"
     echo "Total de palabras en diccionario: $cantidadPalabrasEnDiccionario"
     echo "Porcentaje de palabras encontradas: $porcentajeAciertos"
@@ -475,15 +408,15 @@ ConsultarDiccionarioManu() {
     archivoSalida="resultados_${fechaHora}.txt"
     touch "$archivoSalida"
 
+    echo "$palabrasEncontradas" >>"$archivoSalida"
     #Fecha de ejecutado el reporte
-    echo "" >>"$archivoSalida"
     echo "" >>"$archivoSalida"
     fecha="Fecha ejecución reporte: $(date +'%d/%m/%Y %H:%M:%S')"
     echo "$fecha"
     echo "$fecha" >>"$archivoSalida"
 
     #Cantidad de palabras encontradas
-    echo "Cantidad de palabras encontradas: ${cantidadPalabrasEncontradas}">>"$archivoSalida"
+    echo "Cantidad de palabras encontradas: ${cantidadPalabrasEncontradas}" >>"$archivoSalida"
 
     #Cantidad de palabras totales
     echo "Cantidad de palabras totales: ${cantidadPalabrasEnDiccionario}" >>"$archivoSalida"
@@ -492,11 +425,65 @@ ConsultarDiccionarioManu() {
     echo "Porcentaje aciertos: ${porcentajeAciertos}%" >>"$archivoSalida"
 
     #Usuario logueado
-    echo "" >>"$archivoSalida"
     usuario="$(LeerConfig "Usuario")"
     usuarioLogueado="Usuario logueado: ${usuario}"
     echo "$usuarioLogueado"
     echo "$usuarioLogueado" >>"$archivoSalida"
-    
+
     read -p "Presiona Enter para continuar..."
+}
+
+Algoritmo1() {
+    echo ""
+    read -p "Ingrese la cantidad de datos que desea ingresar: " cantidadDatos
+ 
+    # Verificar si la cantidad ingresada es un número positivo
+    if ! [[ "$cantidadDatos" =~ ^[1-9][0-9]*$ ]]; then
+        echo "Debe ingresar un número entero positivo."
+        read -p "Presiona Enter para continuar..."
+        Algoritmo1
+    else
+
+        # Inicializar variables
+        menor=
+        mayor=
+        suma=0
+        promedio=0
+
+        # Leer los datos ingresados por el usuario y calcular el menor y el mayor
+        for ((i = 1; i <= "$cantidadDatos"; i++)); do
+            read -p  "Ingrese el dato $i: " dato           
+
+            # Verificar si el dato ingresado es un número entero
+            if ! [[ $dato =~ ^[0-9]+$ ]]; then
+                echo "Debe ingresar un número entero."
+                read -p "Presiona Enter para continuar..."
+                Algoritmo1
+            fi
+
+            # Actualizar el menor y el mayor dato
+            if [ -z "$menor" ] || [ "$dato" -lt "$menor" ]; then
+                menor=$dato
+            fi
+ 
+            if [ -z "$mayor" ] || [ "$dato" -gt "$mayor" ]; then
+                mayor=$dato
+            fi
+
+             #echo "Menor dato: ${menor}"
+            suma=$((suma + dato))
+        done
+ 
+         
+        # Mostrar los resultados
+        echo ""
+        promedio=$(echo "scale=2; $suma / $cantidadDatos" | bc)
+        echo "Promedio de los datos ingresados: ${promedio}"
+        echo "Menor dato ingresado: ${menor}"
+        echo "Mayor dato ingresado: ${mayor}"
+        echo ""
+        read -p "Presiona Enter para continuar..."
+        MenuPrincipal
+
+    fi
 }
