@@ -2,7 +2,7 @@
 
 
 #Carga de script con funciones auxiliares********************
-source ./funciones.sh
+source ./seguridad.sh
 #************************************************************
 
 
