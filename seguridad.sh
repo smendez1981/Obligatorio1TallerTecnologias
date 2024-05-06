@@ -1,40 +1,22 @@
 #!/bin/bash
 
+
+# Carga del script que contienen la funcionalidad
+# para volver al menú una vez terminada la rutina
 source ./menu.sh
 
+# Constante donde se guarda la ruta del archivo que 
+# contiene el listado de usuarios del sistema.
 ARCHIVOUSUARIOS="files/usuarios.txt"
+# Constante donde se guarda la ruta del archivo que 
+# contiene el las diferentes variables guardadas.
 ARCHIVOVARIABLES="files/variables.config"
 
 #Funcion de login***************************************************
 
-# Este script de Bash es una función que recibe dos parámetros: $usu y $pwd.
+# Función que recibe dos parámetros: $usu y $pwd.
 # Luego, itera sobre un archivo ($ARCHIVOUSUARIOS) que contiene pares de
-# usuarios y contraseñas separados por dos puntos (:).
-
-# Aquí hay una explicación línea por línea:
-
-#     local usu=$1: Declara una variable local $usu y le asigna el primer argumento pasado a la función.
-
-#     local pwd=$2: Declara una variable local $pwd y le asigna el segundo argumento pasado a la función.
-
-#     while IFS=":" read -r usuDb pwdDb;: Inicia un bucle while que lee cada línea del archivo $ARCHIVOUSUARIOS y divide cada línea en dos campos utilizando : como delimitador. Los campos se almacenan en las variables $usuDb y $pwdDb.
-
-#     do: Inicia el bloque de código que se ejecutará en cada iteración del bucle.
-
-#     echo $usuDb: Imprime el valor de $usuDb, que es el nombre de usuario extraído del archivo.
-
-#     echo $pwd: Imprime el valor de $pwd, que es la contraseña pasada como argumento a la función.
-
-#     if [[ $usu==$usuDb && $pwd==$pwdDb ]]; then: Comprueba si el nombre de usuario $usu coincide con $usuDb y si la contraseña $pwd coincide con $pwdDb.
-
-#     return 0: Devuelve un código de salida 0 (éxito) si se encuentra una coincidencia entre el usuario y la contraseña en el archivo.
-
-#     fi: Cierra la estructura de control if.
-
-#     done < $ARCHIVOUSUARIOS: Cierra el bucle while y redirige la entrada del bucle desde el archivo $ARCHIVOUSUARIOS.
-
-#     return 1: Devuelve un código de salida 1 (fracaso) si no se encuentra ninguna coincidencia entre el usuario y la contraseña en el archivo.
-
+# usuarios y contraseñas separados por dos puntos (:).  
 Login() {
     local usu=$1
     local pwd=$2
@@ -54,14 +36,8 @@ Login() {
 
 
 
-# La función ListarUsuarios lee el archivo de usuarios y contraseñas y
-# luego imprime solo los nombres de usuario, uno por línea.
-#     while IFS=":" read -r usuDb pwdDb; do: Este bucle while lee cada línea del
-#     archivo $ARCHIVOUSUARIOS y divide cada línea en dos campos utilizando : como delimitador. Los campos se almacenan en las variables $usuDb (nombre de usuario) y $pwdDb (contraseña).
-#     echo $usuDb: Esta línea imprime el nombre de usuario ($usuDb) en la salida estándar.
-#     done < $ARCHIVOUSUARIOS: Marca el final del bucle while y redirige la entrada del bucle desde el archivo especificado por la variable $ARCHIVOUSUARIOS.
-# La función ListarUsuarios proporciona una forma de mostrar los nombres de usuario contenidos en el archivo $ARCHIVOUSUARIOS.
-
+# La función ListarUsuarios lee el archivo de usuarios y contraseñas,
+# luego imprime solo los nombres de usuario, uno por línea. 
 ListarUsuarios() {
 
     while IFS=":" read -r usuDb pwdDb; do
@@ -70,47 +46,16 @@ ListarUsuarios() {
 
     read -p "Presiona Enter para continuar..."
     MenuPrincipal
-
 }
 #**********************************************************************************************
 
-# AltaUsuario, se encarga de agregar un nuevo usuario al archivo de usuarios
-
-#     local password y local usuario: Estas líneas definen dos variables locales,
-#     $password y $usuario, respectivamente, que se utilizarán para almacenar el
-#     nombre y la contraseña del nuevo usuario.
-
-#     while [ -z "$usuario" ]: Este bucle while se ejecutará mientras la variable $usuario
-#     esté vacía.
-
-#     read -p "Ingrese nombre del nuevo usuario : " usuario: Esta línea solicita al usuario
-#     que ingrese el nombre del nuevo usuario y almacena la entrada en la variable $usuario.
-
-#     if ExisteUsuario "$usuario"; then: Esta condición verifica si el nombre de usuario
-#     ingresado ($usuario) ya existe. La función ExisteUsuario se encarga de verificar si
-#     el usuario ya está presente en el sistema.
-
-#     echo -e "\033[31mEl nombre '$usuario' ya se encuentra ingresado\033[0m":
-#     Si el usuario ya existe, este mensaje de error se imprime en rojo.
-
-#     while [ -z "$password" ]: Este bucle while se ejecutará mientras la variable
-#     $password esté vacía.
-
-#     read -s -p "Ingrese su password:" password: Esta línea solicita al usuario que
-#     ingrese la contraseña del nuevo usuario de forma segura, y la entrada se almacena
-#     en la variable $password. La opción -s oculta la entrada de la contraseña en la
-#     pantalla.
-
-#     if ! [ "$password" ]: Esta condición verifica si la contraseña está vacía.
-
-#     echo -e "\033[31mEl password de usuario no puede quedar en blanco\033[0m":
-#     Si la contraseña está vacía, se imprime un mensaje de error en rojo.
-
-#     echo "$usuario:$password" >> "$ARCHIVOUSUARIOS": Esta línea agrega la nueva
-#     entrada de usuario (nombre de usuario y contraseña) al archivo de usuarios
-#     especificado en la variable $ARCHIVOUSUARIOS.
-
-#     MenuPrincipal: Esta línea regresa al menú principal después de agregar el usuario.
+# AltaUsuario, se encarga de agregar un nuevo usuario al archivo de usuarios.
+# Se pide nombre de usuario y se revisa que este ya no exista. En caso de que
+# ya exista se vuelve a pedir los datos nuevamente.
+# Se revisa tambien que se haya ingresado un password.
+# En caso de que se cumplan las condiciones, se redirecciona la salida
+# de los datos ingresados al archivo que contiene el listado de usuarios
+# los cuales son anexados al final.
 AltaUsuario() {
     local password
     local usuario

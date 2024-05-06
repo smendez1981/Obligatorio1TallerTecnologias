@@ -1,4 +1,7 @@
-- El script debe comenter comentarios explicando todos los pasos.
-- Entregar archivos anexos y *un informe especificando como han resuelto cada parte del problema*
-- En el codigo deben estar los nombres y numero de estudiante de los integrantes del grupo.
-- La entrega se realiza en un archivo .zip que debe contener el codigo, un pdf que contenga caratula, presentación de los integrantes con foto, índice, documentación del trabajo realizado (informe, explicando cada comando complejo utilizado) y el código en el anexo.
+# Taller de tecnologías 1. Universidad ORT
+## Obligatorio 1 Grupo N1B
+
+### Integrantes:
+* 111111 - Manuel Pallares 
+* 143403 - Sebastián Méndez 
+

@@ -1,7 +1,8 @@
 #!/bin/bash
 
 
-
+# Función que devuelve el promedio de los datos ingresados,
+# el menor y mayor dato ingresado
 Algoritmo1() {
     echo ""
     read -p "Ingrese la cantidad de datos que desea ingresar: " cantidadDatos
@@ -56,6 +57,8 @@ Algoritmo1() {
     fi
 }
 
+# Función que devuelve si la palabra que se le 
+# pasa como parámetro es un palindromo.
 Palindromo() {
     local palabra=""    
     local palabrareversa=""
@@ -69,8 +72,8 @@ Palindromo() {
     done
 
 
-echo $palabrareversa
-echo $palabra
+echo "$palabrareversa"
+echo "$palabra"
     # Comparar la palabra original con su reverso
     if [ "$palabra" == "$palabrareversa" ]; then
         echo "La palabra \"$palabra\" es un palíndromo."

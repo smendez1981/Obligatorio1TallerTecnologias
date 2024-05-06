@@ -1,16 +1,23 @@
 #!/bin/bash
 
+# Constante donde se guarda la ruta del archivo que 
+# contiene el diccionario suministrado.
 ARCHIVODICCIONARIO="files/diccionario.txt"
 
+
+# Función que se encarga de obtener las palabras
+# del diccionario que unicamente contengan la 
+# vocal que previamente se configuró
 ConsultarVocal() {
 
-    #Creacion de archivo que se guarda con
-    #los resultados de la busqueda.
-    #resultados_vocal_YYYY-mm-dd_HH-MM-ss
+    # Creacion de archivo que se guarda con
+    # los resultados de la busqueda.
+    # resultados_vocal_YYYY-mm-dd_HH-MM-ss
     fechaHora=$(date +"%Y-%m-%d_%H-%M-%S")
     archivoSalida="resultados/resultados_vocal_${fechaHora}.txt"
     touch "$archivoSalida"
 
+    # Recupera la vocal guardada en el archivo de configuración
     vocal="$(LeerConfig "Vocal")"
 
     regex_vocal="^aeiou"
@@ -35,20 +42,25 @@ ConsultarVocal() {
 
 }
 
+
+# Función que se encarga de obtener las palabras
+# del diccionario que contengan la LetraInicial
+# LetraFinal y LetraContenida que previamente se configuró
 ConsultarDiccionario() {
-    #Recupera las variables guardadas en el
-    #archivo de configuracion
+    # Recupera las variables guardadas en el
+    # archivo de configuracion
     letraInicio="$(LeerConfig "Inicio")"
     letraFin="$(LeerConfig "Fin")"
     letraContenida="$(LeerConfig "Contenida")"
-    #Construir la expresión regular para buscar palabras
-    #Empieza con "letraInicio"
-    #Termina con "LetraFin"
-    #En medio tiene "LetraContenida"
+    
+    # Construir la expresión regular para buscar palabras
+    # Empieza con "letraInicio"
+    # Termina con "LetraFin"
+    # En medio tiene "LetraContenida"
     regex="^${letraInicio}.*${letraContenida}.*${letraFin}$"
-    #wc (Word Count) cuenta la cantida de palabras, el parametro -l hace que cuenta la cantidad de lineas
+    # wc (Word Count) cuenta la cantida de palabras, el parametro -l hace que cuenta la cantidad de lineas
     cantidadPalabrasEnDiccionario=$(wc -l <"$ARCHIVODICCIONARIO")
-    #usamos grep para buscar las palabras que cumplen con la expresion regular
+    # usamos grep para buscar las palabras que cumplen con la expresion regular
     palabrasEncontradas=$(grep -E "$regex" "$ARCHIVODICCIONARIO")
     cantidadPalabrasEncontradas=$(echo "$palabrasEncontradas" | wc -l)
     porcentajeAciertos=$(echo "scale=2; $cantidadPalabrasEncontradas / $cantidadPalabrasEnDiccionario * 100" | bc)
@@ -59,15 +71,15 @@ ConsultarDiccionario() {
     echo "Palabras encontradas:"
     echo "$palabrasEncontradas"
 
-    #Creacion de archivo que se guarda con
-    #los resultados de la busqueda.
-    #resultados_YYYY-mm-dd_HH-MM-ss
+    # Creacion de archivo que se guarda con
+    # los resultados de la busqueda.
+    # resultados_YYYY-mm-dd_HH-MM-ss
     fechaHora=$(date +"%Y-%m-%d_%H-%M-%S")
     archivoSalida="resultados/resultados_${fechaHora}.txt"
     touch "$archivoSalida"
 
     echo "$palabrasEncontradas" >>"$archivoSalida"
-    #Fecha de ejecutado el reporte
+    # Fecha de ejecutado el reporte
     echo "" >>"$archivoSalida"
     fecha="Fecha ejecución reporte: $(date +'%d/%m/%Y %H:%M:%S')"
     echo "$fecha"

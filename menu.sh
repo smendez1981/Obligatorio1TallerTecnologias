@@ -1,10 +1,19 @@
 #!/bin/bash
  
+#*********************************************************
+# Archivo con las funciones que se usaran para desplegar
+# el menú de usuario y su controlador correspondiente.
+#********************************************************* 
 
+# Carga de los scripts que contienen las diferentes
+# funciones que seran llamadas desde el controlador
 source ./configuracion.sh
 source ./consultas.sh
 source ./algoritmos.sh
 
+
+# Función que despliega en pantalla las diferentes
+# opciones que se le permiten realizar al usuario
 MenuPrincipal() {
     clear
     echo "---------------------------------------"
@@ -24,6 +33,9 @@ MenuPrincipal() {
     echo "----------------------------------------"
 }
 
+
+# Función que se encargara de capturar la opción
+# selecionada por el usuario.
 ControladorOpcionesMenu() {
 
     local opcion=$1
