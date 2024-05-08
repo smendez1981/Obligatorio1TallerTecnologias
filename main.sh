@@ -89,7 +89,7 @@ done
      # en el cual se despliega el menú de usuario.
      # Luego de seleccionada cada opción y ejecutado el código
      # que tenga asociado, se vuelve a mostrar el menù.
-     while true; do
+     while [ true ]; do
         MenuPrincipal
         # Se lee la opcion elegida por el usuario y se le pasa
         # al controlador de opciones del menú.

@@ -40,9 +40,10 @@ Login() {
 # luego imprime solo los nombres de usuario, uno por línea. 
 ListarUsuarios() {
 
-    while IFS=":" read -r usuDb pwdDb; do
-        echo "$usuDb"
-    done <$ARCHIVOUSUARIOS
+    # while IFS=":" read -r usuDb pwdDb; do
+    #      echo "$usuDb"
+    # done <$ARCHIVOUSUARIOS
+    awk -F ':' '{print $1}' $ARCHIVOUSUARIOS
 
     read -p "Presiona Enter para continuar..."
     MenuPrincipal

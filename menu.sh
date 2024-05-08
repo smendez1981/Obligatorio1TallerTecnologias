@@ -19,7 +19,7 @@ MenuPrincipal() {
     echo "---------------------------------------"
     echo "---------Bienvenido al sistema---------"
     echo "---------------------------------------"
-    echo " 1 - Listar usuarios registros"
+    echo " 1 - Listar usuarios registrados"
     echo " 2 - Alta de usuario"
     echo " 3 - Configurar letra inicial"
     echo " 4 - Configurar letra final"

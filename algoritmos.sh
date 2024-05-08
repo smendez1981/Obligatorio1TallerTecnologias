@@ -69,11 +69,8 @@ Palindromo() {
     # Obtener el reverso de la palabra
     for ((i = $largo - 1; i >= 0; i--)); do
         palabrareversa="$palabrareversa${palabra:$i:1}"
-    done
-
-
-echo "$palabrareversa"
-echo "$palabra"
+    done 
+    
     # Comparar la palabra original con su reverso
     if [ "$palabra" == "$palabrareversa" ]; then
         echo "La palabra \"$palabra\" es un palíndromo."

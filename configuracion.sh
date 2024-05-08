@@ -85,12 +85,12 @@ GuardarLetra() {
     # Comprobar si la variable ya existe en el archivo
     if grep -q "^$clave=" "$ARCHIVOVARIABLES"; then
         # La variable existe, modificar su valor
-        sed -i "s/^$clave=.*/$clave=$valor/" "$ARCHIVOVARIABLES"
+        sed -i "s/^$clave=.*/$clave=${valor:0:1}/" "$ARCHIVOVARIABLES"
         echo ""
         echo "La letra ${clave} ha sido modificada con el valor '$valor'."
     else
         # La variable no existe, agregarla al final del archivo
-        echo "$clave=$valor" >>"$ARCHIVOVARIABLES"
+        echo "$clave=${valor:0:1}" >>"$ARCHIVOVARIABLES"
         echo ""
         echo "La letra ${clave} ha sido agregada con el valor '$valor'."
     fi
