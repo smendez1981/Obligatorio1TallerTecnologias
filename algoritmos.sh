@@ -63,7 +63,7 @@ Palindromo() {
     local palabra=""    
     local palabrareversa=""
 
-    read -p "Ingrese la palabra $i: " palabra
+    read -p "Ingrese la palabra: " palabra
     local largo=${#palabra}
 
     # Obtener el reverso de la palabra

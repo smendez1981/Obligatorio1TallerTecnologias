@@ -59,7 +59,8 @@ ConsultarDiccionario() {
     # En medio tiene "LetraContenida"
     regex="^${letraInicio}.*${letraContenida}.*${letraFin}$"
     # wc (Word Count) cuenta la cantida de palabras, el parametro -l hace que cuenta la cantidad de lineas
-    cantidadPalabrasEnDiccionario=$(wc -l <"$ARCHIVODICCIONARIO")
+    cantidadPalabrasEnDiccionario=$(wc -l <"$ARCHIVODICCIONARIO") 
+    cantidadPalabrasEnDiccionario=$((cantidadPalabrasEnDiccionario+1))  
     # usamos grep para buscar las palabras que cumplen con la expresion regular
     palabrasEncontradas=$(grep -E "$regex" "$ARCHIVODICCIONARIO")
     cantidadPalabrasEncontradas=$(echo "$palabrasEncontradas" | wc -l)
