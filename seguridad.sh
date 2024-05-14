@@ -1,14 +1,13 @@
 #!/bin/bash
 
-
 # Carga del script que contienen la funcionalidad
 # para volver al menú una vez terminada la rutina
 source ./menu.sh
 
-# Constante donde se guarda la ruta del archivo que 
+# Constante donde se guarda la ruta del archivo que
 # contiene el listado de usuarios del sistema.
 ARCHIVOUSUARIOS="files/usuarios.txt"
-# Constante donde se guarda la ruta del archivo que 
+# Constante donde se guarda la ruta del archivo que
 # contiene el las diferentes variables guardadas.
 ARCHIVOVARIABLES="files/variables.config"
 
@@ -16,7 +15,7 @@ ARCHIVOVARIABLES="files/variables.config"
 
 # Función que recibe dos parámetros: $usu y $pwd.
 # Luego, itera sobre un archivo ($ARCHIVOUSUARIOS) que contiene pares de
-# usuarios y contraseñas separados por dos puntos (:).  
+# usuarios y contraseñas separados por dos puntos (:).
 Login() {
     local usu=$1
     local pwd=$2
@@ -34,10 +33,8 @@ Login() {
     return 1
 }
 
-
-
 # La función ListarUsuarios lee el archivo de usuarios y contraseñas,
-# luego imprime solo los nombres de usuario, uno por línea. 
+# luego imprime solo los nombres de usuario, uno por línea.
 ListarUsuarios() {
 
     # while IFS=":" read -r usuDb pwdDb; do
@@ -66,7 +63,7 @@ AltaUsuario() {
         read -p "Ingrese nombre del nuevo usuario : " usuario
 
         if ExisteUsuario "$usuario"; then
-            echo -e "\033[31mEl nombre '$usuario' ya se encuentra ingresado\033[0m"
+            echo -e "\033[31mEl nombre '$usuario' ya se encuentra registrado\033[0m"
             read -p "Presiona Enter para continuar..."
             AltaUsuario
         else
@@ -75,7 +72,7 @@ AltaUsuario() {
                 read -s -p "Ingrese su password:" password
 
                 if ! [ "$password" ]; then
-                    echo -e "\033[31mEl password de usuario no puede quedar en blanco\033[0m"
+                    echo -e "\033[31mEl password del usuario no puede quedar en blanco\033[0m"
                 fi
 
             done

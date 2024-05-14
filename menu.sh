@@ -1,16 +1,15 @@
 #!/bin/bash
- 
+
 #*********************************************************
 # Archivo con las funciones que se usaran para desplegar
 # el menú de usuario y su controlador correspondiente.
-#********************************************************* 
+#*********************************************************
 
 # Carga de los scripts que contienen las diferentes
 # funciones que seran llamadas desde el controlador
 source ./configuracion.sh
 source ./consultas.sh
 source ./algoritmos.sh
-
 
 # Función que despliega en pantalla las diferentes
 # opciones que se le permiten realizar al usuario
@@ -33,7 +32,6 @@ MenuPrincipal() {
     echo "----------------------------------------"
 }
 
-
 # Función que se encargara de capturar la opción
 # selecionada por el usuario.
 ControladorOpcionesMenu() {
@@ -44,7 +42,7 @@ ControladorOpcionesMenu() {
 
     1)
         echo ""
-        echo "Listado de  usuarios registros"
+        echo "Listado de usuarios registrados"
         echo "----------------------------------------"
         ListarUsuarios
         echo "----------------------------------------"
@@ -88,7 +86,7 @@ ControladorOpcionesMenu() {
         ;;
     8)
         echo ""
-        echo "Consultando vocal..."
+        echo "Consultando vocal ..."
         ConsultarVocal
         ;;
     9)
@@ -102,7 +100,7 @@ ControladorOpcionesMenu() {
         Palindromo
         ;;
     x)
-        echo "Saliendo..."
+        echo "Saliendo ..."
         exit 0
         ;;
     *)
@@ -110,6 +108,3 @@ ControladorOpcionesMenu() {
         ;;
     esac
 }
-
-
- 

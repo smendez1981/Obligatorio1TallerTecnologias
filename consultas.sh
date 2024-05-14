@@ -1,12 +1,11 @@
 #!/bin/bash
 
-# Constante donde se guarda la ruta del archivo que 
+# Constante donde se guarda la ruta del archivo que
 # contiene el diccionario suministrado.
 ARCHIVODICCIONARIO="files/diccionario.txt"
 
-
 # Función que se encarga de obtener las palabras
-# del diccionario que unicamente contengan la 
+# del diccionario que unicamente contengan la
 # vocal que previamente se configuró
 ConsultarVocal() {
 
@@ -42,7 +41,6 @@ ConsultarVocal() {
 
 }
 
-
 # Función que se encarga de obtener las palabras
 # del diccionario que contengan la LetraInicial
 # LetraFinal y LetraContenida que previamente se configuró
@@ -52,18 +50,24 @@ ConsultarDiccionario() {
     letraInicio="$(LeerConfig "Inicio")"
     letraFin="$(LeerConfig "Fin")"
     letraContenida="$(LeerConfig "Contenida")"
-    
+
     # Construir la expresión regular para buscar palabras
     # Empieza con "letraInicio"
     # Termina con "LetraFin"
     # En medio tiene "LetraContenida"
     regex="^${letraInicio}.*${letraContenida}.*${letraFin}$"
     # wc (Word Count) cuenta la cantida de palabras, el parametro -l hace que cuenta la cantidad de lineas
-    cantidadPalabrasEnDiccionario=$(wc -l <"$ARCHIVODICCIONARIO") 
-    cantidadPalabrasEnDiccionario=$((cantidadPalabrasEnDiccionario+1))  
+    cantidadPalabrasEnDiccionario=$(wc -l <"$ARCHIVODICCIONARIO")
+    cantidadPalabrasEnDiccionario=$((cantidadPalabrasEnDiccionario + 1))
     # usamos grep para buscar las palabras que cumplen con la expresion regular
     palabrasEncontradas=$(grep -E "$regex" "$ARCHIVODICCIONARIO")
-    cantidadPalabrasEncontradas=$(echo "$palabrasEncontradas" | wc -l)
+    # usamos if -z para verificar si se encontraron palabras
+    if [ -z "$palabrasEncontradas" ]; then
+        cantidadPalabrasEncontradas=0
+    else
+        # usamos grep -c para contar las líneas no vacías
+        cantidadPalabrasEncontradas=$(echo "$palabrasEncontradas" | grep -c .)
+    fi
     porcentajeAciertos=$(echo "scale=2; $cantidadPalabrasEncontradas / $cantidadPalabrasEnDiccionario * 100" | bc)
 
     echo "Cantidad de palabras encontradas: $cantidadPalabrasEncontradas"
