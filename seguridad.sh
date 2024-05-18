@@ -24,6 +24,8 @@ Login() {
 
         if [[ "$usu" == "$usuDb" && "$pwd" == "$pwdDb" ]]; then
             clave="Usuario"
+            #sed -i se usa para editar el archivo de variables
+            #sustituyendo el valor de la variable $clave por el valor de $usu
             sed -i "s/^$clave=.*/$clave=$usu/" "$ARCHIVOVARIABLES"
 
             return 0

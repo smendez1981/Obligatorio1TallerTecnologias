@@ -8,37 +8,15 @@ ARCHIVODICCIONARIO="files/diccionario.txt"
 # del diccionario que unicamente contengan la
 # vocal que previamente se configuró
 ConsultarVocal() {
-
-    # Creacion de archivo que se guarda con
-    # los resultados de la busqueda.
-    # resultados_vocal_YYYY-mm-dd_HH-MM-ss
-    fechaHora=$(date +"%Y-%m-%d_%H-%M-%S")
-    archivoSalida="resultados/resultados_vocal_${fechaHora}.txt"
-    touch "$archivoSalida"
-
     # Recupera la vocal guardada en el archivo de configuración
     vocal="$(LeerConfig "Vocal")"
-
     regex_vocal="^aeiou"
-
-    # Usar while read para leer el archivo línea por línea
-    while IFS= read -r palabra; do
-        # La expresión regular ^([^aeiou]*(${vocal}|${vocal^^})[^aeiou]*)+ se utiliza para verificar si la palabra contiene la vocal dada ($vocal en minúsculas o mayúsculas) rodeada únicamente por consonantes o al inicio/final de la palabra, permitiendo que la vocal aparezca una o más veces en la palabra.
-        # ^: indica el inicio de la cadena.
-        # (...)+: representa una o más ocurrencias del grupo entre paréntesis.
-        # [^aeiou]*: representa cero o más caracteres que no sean vocales (consonantes).
-        # (${vocal}|${vocal^^}): representa la vocal dada ($vocal en minúsculas o mayúsculas). Por ejemplo, si la vocal es 'a', esto se traduce a (a|A), permitiendo que 'a' o 'A' aparezcan.
-        # [^aeiouA]*: representa cero o más caracteres que no sean vocales (consonantes), después de la vocal.
-        if [[ "$palabra" =~ ^([$regex_vocal]*(${vocal}|${vocal^^})[$regex_vocal]*)+$ ]]; then
-            echo "$palabra"
-            echo "$palabra" >>"$archivoSalida"
-        fi
-
-    done <"$ARCHIVODICCIONARIO"
-
+    # buscar la palabra usando grep -E para usar expresiones regulares
+    palabrasEncontradas=$(grep -E "^([^aeiou]*(${vocal}|${vocal}^^)[^aeiou]*)+$" "$ARCHIVODICCIONARIO")
+    echo "Palabras encontradas que únicamente contienen la vocal $vocal:"
+    echo "$palabrasEncontradas"
     echo "Busqueda terminada"
     read -p "Presiona Enter para continuar..."
-
 }
 
 # Función que se encarga de obtener las palabras

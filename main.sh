@@ -73,8 +73,6 @@ echo ""
 # anteriormente obtenidas
 if Login "$usuario" "$password"; then
 
-    sleep 1
-
     # Si el inicio de sessión es correcto se entra en un bucle
     # en el cual se despliega el menú de usuario.
     # Luego de seleccionada cada opción y ejecutado el código
