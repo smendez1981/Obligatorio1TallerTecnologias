@@ -1,7 +1,0 @@
-
-
-Fecha ejecución reporte: 14/05/2024 22:24:20
-Cantidad de palabras encontradas: 1
-Cantidad de palabras totales: 174846
-Porcentaje aciertos: 0%
-Usuario logueado: a
