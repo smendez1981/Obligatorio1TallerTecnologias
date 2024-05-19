@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Integrantes********************************************************
+# 328226 - Manuel Pallares 
+# 143403 - Sebastián Méndez 
+# *******************************************************************
+
+
 #*********************************************************
 # Archivo con las funciones que se usaran para desplegar
 # el menú de usuario y su controlador correspondiente.

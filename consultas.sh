@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Integrantes********************************************************
+# 328226 - Manuel Pallares 
+# 143403 - Sebastián Méndez 
+# *******************************************************************
+
+
 # Constante donde se guarda la ruta del archivo que
 # contiene el diccionario suministrado.
 ARCHIVODICCIONARIO="files/diccionario.txt"

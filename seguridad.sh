@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Integrantes********************************************************
+# 328226 - Manuel Pallares 
+# 143403 - Sebastián Méndez 
+# *******************************************************************
+
 # Carga del script que contienen la funcionalidad
 # para volver al menú una vez terminada la rutina
 source ./menu.sh

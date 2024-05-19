@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Integrantes********************************************************
+# 328226 - Manuel Pallares 
+# 143403 - Sebastián Méndez 
+# *******************************************************************
+
 
 # Función que devuelve el promedio de los datos ingresados,
 # el menor y mayor dato ingresado

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Integrantes********************************************************
+# 328226 - Manuel Pallares 
+# 143403 - Sebastián Méndez 
+# *******************************************************************
 
 # Constante donde se guarda la ruta del archivo que 
 # se usará para guardar las variables
